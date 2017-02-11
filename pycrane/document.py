@@ -1,15 +1,38 @@
-#! /usr/bin/env python3
 """
-A simple law parser in Python
+Document.py contains the "model" for building a legal document.
+
+A legal document(a Document object) usually consisit of a preamble, the body and a footer.
+
+The pramble and the footer contain some initial text, the signing parties and
+metadata and are optional. The main part of any legal document is the body.
+
+The body of a legal document contains the articles. It can be dividen into
+sections and subsections.
+
+Articles are the atoms of a legal document. They can be divided into paragraphs
+and/or lists.
 """
-__author__ = "Jani Šumak"
-__version__ = "0.1"
-import re
+class Document(object):
+    """
+    Represents a legal document: preamble, body (divided into sections,
+    subsections and articles) and a footer).
 
-
-# Python2 ARTICLE_TOKEN = re.compile(r"\d\.\s\w+(?=\n)", re.UNICODE)
-ARTICLE_TOKEN = re.compile(r"\d\.\s\w+(?=\n)")
-PARAGRAPH_TOKEN = re.compile(r"")
+    The Document has a computed property "text" and a method "pretty_print" for
+    displaying the legal document, but under the hood a Document is a DOM with
+    sections, subsections and articles acting as nodes.
+    """
+    def __init__(self, title=None, preamble=None, body=None, footer=None):
+        """
+        :param title: a string representing the title
+        :param preamble: an Element node that does not contain any articles
+        :param body: a list conating Element nodes with articles
+        :param footer: an Element node without an article at the end of the
+         document
+        """
+        self.title = title
+        self.preamble = preamble
+        self.body = body
+        self.footer = footer
 
 
 class Article(object):
@@ -21,6 +44,19 @@ class Article(object):
         An article is divided into paragraphs. Paragraphs are
         represented by a Paragraph object.
 
+        A usual article has the following structure:
+
+        1. article number
+        (a short title)
+
+        First paragraph.
+
+        Second paragraph:
+        - a list item
+        - a list item
+
+        Third paragraph
+
         :param article_number: the article number (string)
         :param paragraphs: a tuple of Paragraphs (tuple)
         :param title: a special paragraph, usually the first (string)
@@ -30,31 +66,16 @@ class Article(object):
         self.title = title
         self.paragraphs = paragraphs
    
-   @property
-   def text(self):
-       paragraphs = [para.text for para in self.paragraphs]
-       article_text = "".join(paragraphs)
-       return article_text
+    @property
+    def text(self):
+        paragraphs = [para.text for para in self.paragraphs]
+        article_text = "".join(paragraphs)
+        return article_text
 
-   def __str__(self):
-       return self.title if self.title else self.article_number
+    def __str__(self):
+        return self.title if self.title else self.article_number
 
-   def __repr__(self):
-       return "Article <%s>" % self.article_number 
+    def __repr__(self):
+        return "Article <%s>" % self.article_number 
 
 
-def parse_text(text=None, file=None):
-    """
-    Parses a string, an StringIO object or opens a file.
-    """
-    if not text:
-        text = open(file).readlines()
-    parsed_text = re.split(ARTICLE_TOKEN, text)
-    return parsed_text
-tmp = t[:]
-    ...: for x in re.findall(, t):
-            ...:     found = tmp[:tmp.find(x)]
-                ...:     print(found)
-                    ...:     tmp = tmp.split(found)[1]
-                        ...:     print(10*"=")
-                            ...: print(tmp)
